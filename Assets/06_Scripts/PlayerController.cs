@@ -5,22 +5,31 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public float MoveSpeed = 5.0f;
     public InputAction MoveAction;
+    Rigidbody2D rb2d;
+    Vector2 move;
+    
     void Start()
     {
         // QualitySettings.vSyncCount = 0;
         // Application.targetFrameRate = 10;
         MoveAction.Enable();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
         // if (Keyboard.current.upArrowKey.isPressed)
 
-        Vector2 move = MoveAction.ReadValue<Vector2>();
+        move = MoveAction.ReadValue<Vector2>();
         Debug.Log(move);
-        Vector2 position = (Vector2)transform.position
-                             + move * 3.0f * Time.deltaTime;
-        transform.position = position;
+    }
+
+    void FixedUpdate()
+    {
+        Vector2 position = (Vector2)rb2d.position
+                             + move * MoveSpeed * Time.deltaTime;
+        rb2d.MovePosition(position);
     }
 }
