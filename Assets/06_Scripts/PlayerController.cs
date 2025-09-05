@@ -5,17 +5,35 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MoveSpeed = 5.0f;
+    #region CONST
+    const int MIN_HEALTH = 0;
+    const int MAX_HEALTH = 20;
+    const int START_HEALTH = 5;
+    const float MIN_SPEED = 1.0f;
+    const float MAX_SPEED = 10.0f;
+    const float START_SPEED = 5.0f;
+    #endregion
+
+    #region  public
     public InputAction MoveAction;
+    [Range(MIN_HEALTH, MAX_HEALTH)] public int maxHealth = START_HEALTH;
+    [Range(MIN_SPEED, MAX_SPEED)] public float MoveSpeed = START_SPEED;
+    #endregion
+
+    #region private
+    int currentHealth;
     Rigidbody2D rb2d;
     Vector2 move;
-    
+    #endregion
+
+    #region Method
     void Start()
     {
         // QualitySettings.vSyncCount = 0;
         // Application.targetFrameRate = 10;
         MoveAction.Enable();
         rb2d = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
     }
 
     void Update()
@@ -32,4 +50,11 @@ public class PlayerController : MonoBehaviour
                              + move * MoveSpeed * Time.deltaTime;
         rb2d.MovePosition(position);
     }
+
+    void ChangeHealth(int amount)
+    {
+        currentHealth = Mathf.Clamp(currentHealth + amount, MIN_HEALTH, maxHealth);
+        Debug.Log($"{currentHealth}/{maxHealth}");
+    }
+    #endregion
 }
