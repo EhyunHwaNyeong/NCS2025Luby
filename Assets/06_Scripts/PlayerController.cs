@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     public InputAction MoveAction;
     [Range(MIN_HEALTH, MAX_HEALTH)] public int maxHealth = START_HEALTH;
     [Range(MIN_SPEED, MAX_SPEED)] public float MoveSpeed = START_SPEED;
+    public float timeInvincible = 2.0f;
+    public float timeHeal = 2.0f;
     #endregion
 
     #region Property
@@ -34,6 +36,11 @@ public class PlayerController : MonoBehaviour
     int currentHealth;
     Rigidbody2D rb2d;
     Vector2 move;
+    bool isInvincible;
+    float damegeCooldown;
+    bool isHealing;
+    float HealCooldown;
+    
     #endregion
 
     #region Method
@@ -49,9 +56,25 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // if (Keyboard.current.upArrowKey.isPressed)
-
         move = MoveAction.ReadValue<Vector2>();
         // Debug.Log(move);
+
+        if (isInvincible)
+        {
+            damegeCooldown -= Time.deltaTime;
+            if (damegeCooldown < 0)
+            {
+                isInvincible = false;
+            }
+        }
+        if (isHealing)
+        {
+            HealCooldown -= Time.deltaTime;
+            if (HealCooldown < 0)
+            {
+                isHealing = false;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -63,6 +86,25 @@ public class PlayerController : MonoBehaviour
 
     public void ChangeHealth(int amount)
     {
+        if (amount < 0)
+        {
+            if (isInvincible)
+            {
+                return;
+            }
+            isInvincible = true;
+            damegeCooldown = timeInvincible;
+        }
+        if (isHealing)
+        {
+            return;
+        }
+        else
+        {
+            isHealing = true;
+            HealCooldown = timeHeal;
+        }        
+
         currentHealth = Mathf.Clamp(currentHealth + amount, MIN_HEALTH, maxHealth);
         Debug.Log($"{currentHealth}/{maxHealth}");
     }
